@@ -14,7 +14,7 @@ export class ConnectionService {
   async welcome(connectionData: any): Promise<boolean> {
     const connection = connectionData.connection_id;
     const send_message =
-      `http://${this.configService.get<string>('API_BASE_URL')}:8032/connections/` +
+      `${this.configService.get<string>('API_BASE_URL')}:8032/connections/` +
       connection +
       '/send-message';
     const requestConfig: AxiosRequestConfig = {
@@ -23,6 +23,12 @@ export class ConnectionService {
         'X-API-KEY': this.configService.get<string>('API_KEY'),
       },
     };
+    console.log({
+      apiUrl: this.configService.get<string>('API_BASE_URL'),
+      bearerToken: this.configService.get<string>('BEARER_TOKEN'),
+      apiKey: this.configService.get<string>('API_KEY'),
+    });
+
     console.log('Call REST ', send_message, ' Options ', requestConfig);
     const message = await lastValueFrom(
       this.httpService
