@@ -4,6 +4,6 @@ import { CredentialService } from './credential.service';
 
 @Module({
   controllers: [CredentialController],
-  providers: [CredentialService]
+  providers: [CredentialService],
 })
 export class CredentialModule {}

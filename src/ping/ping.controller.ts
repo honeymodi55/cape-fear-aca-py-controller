@@ -3,11 +3,9 @@ import { Request, Response } from 'express';
 
 @Controller()
 export class PingController {
-
-    @Post('/')
-    ping(@Body() data: any,@Res() response: Response): Response {
-        console.log("Ping controller", data);
-        return response.status(HttpStatus.OK).send("OK"); 
-    }
-
+  @Post('/')
+  ping(@Body() data: any, @Res() response: Response): Response {
+    console.log('Ping controller', data);
+    return response.status(HttpStatus.OK).send('OK');
+  }
 }
