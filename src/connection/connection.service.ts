@@ -23,11 +23,6 @@ export class ConnectionService {
         'X-API-KEY': this.configService.get<string>('API_KEY'),
       },
     };
-    console.log({
-      apiUrl: this.configService.get<string>('API_BASE_URL'),
-      bearerToken: this.configService.get<string>('BEARER_TOKEN'),
-      apiKey: this.configService.get<string>('API_KEY'),
-    });
 
     console.log('Call REST ', send_message, ' Options ', requestConfig);
     const message = await lastValueFrom(
