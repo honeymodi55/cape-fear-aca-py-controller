@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConnectionModule } from './connection/connection.module';
@@ -9,9 +10,12 @@ import { RouterModule } from '@nestjs/core';
 
 @Module({
   imports: [
-    ConnectionModule, 
-    CredentialModule, 
-    VerificationModule, 
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+    ConnectionModule,
+    CredentialModule,
+    VerificationModule,
     PingModule,
     RouterModule.register([
       {
@@ -35,8 +39,9 @@ import { RouterModule } from '@nestjs/core';
             module: VerificationModule,
           },
         ],
-      }
-    ])],
+      },
+    ]),
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
