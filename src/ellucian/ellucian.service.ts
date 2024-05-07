@@ -93,40 +93,40 @@ export class EllucianService {
   }
 
 
-async getStudent(studentGuid: string): Promise<any> {
-  const apiRoute = this.configService.get<string>('ELLUCIAN_STUDENT_API_ROUTE', '');
-  const url = `${this.apiUrl}${apiRoute}?criteria={"person":{"id":"${studentGuid}"}}`;
-  return this.fetchFromEllucian(url);
-}
+  async getStudent(studentGuid: string): Promise<any> {
+    const apiRoute = this.configService.get<string>('ELLUCIAN_STUDENT_API_ROUTE', '');
+    const url = `${this.apiUrl}${apiRoute}?criteria={"person":{"id":"${studentGuid}"}}`;
+    return this.fetchFromEllucian(url);
+  }
 
-async getCourseIdBySection(sectionId: string): Promise<any> {
-  const apiRoute = this.configService.get<string>('ELLUCIAN_SECTIONS_API_ROUTE', '');
-  const url = `${this.apiUrl}${apiRoute}/${sectionId}`;
-  return this.fetchFromEllucian(url);
-}
+  async getCourseIdBySection(sectionId: string): Promise<any> {
+    const apiRoute = this.configService.get<string>('ELLUCIAN_SECTIONS_API_ROUTE', '');
+    const url = `${this.apiUrl}${apiRoute}/${sectionId}`;
+    return this.fetchFromEllucian(url);
+  }
 
-async getCourse(courseId: string): Promise<any> {
-  const apiRoute = this.configService.get<string>('ELLUCIAN_COURSES_API_ROUTE', '');
-  const url = `${this.apiUrl}${apiRoute}/${courseId}`;
-  return this.fetchFromEllucian(url);
-}
+  async getCourse(courseId: string): Promise<any> {
+    const apiRoute = this.configService.get<string>('ELLUCIAN_COURSES_API_ROUTE', '');
+    const url = `${this.apiUrl}${apiRoute}/${courseId}`;
+    return this.fetchFromEllucian(url);
+  }
 
-async getAcademicPeriod(academicPeriodId: string): Promise<any> {
-  const apiRoute = this.configService.get<string>('ELLUCIAN_ACADEMIC_PERIOD_API_ROUTE', '');
-  const url = `${this.apiUrl}${apiRoute}/${academicPeriodId}`;
-  return this.fetchFromEllucian(url);
-}
+  async getAcademicPeriod(academicPeriodId: string): Promise<any> {
+    const apiRoute = this.configService.get<string>('ELLUCIAN_ACADEMIC_PERIOD_API_ROUTE', '');
+    const url = `${this.apiUrl}${apiRoute}/${academicPeriodId}`;
+    return this.fetchFromEllucian(url);
+  }
 
-async getGradeDefinition(gradeDefinitionId: string): Promise<any> {
-  const apiRoute = this.configService.get<string>('ELLUCIAN_ACADEMIC_GRADE_DEF_API_ROUTE', '');
-  const url = `${this.apiUrl}${apiRoute}/${gradeDefinitionId}`;
-  return this.fetchFromEllucian(url);
-}
+  async getGradeDefinition(gradeDefinitionId: string): Promise<any> {
+    const apiRoute = this.configService.get<string>('ELLUCIAN_ACADEMIC_GRADE_DEF_API_ROUTE', '');
+    const url = `${this.apiUrl}${apiRoute}/${gradeDefinitionId}`;
+    return this.fetchFromEllucian(url);
+  }
 
-async getStudentGradePointAverages(studentGuid: string): Promise<any> {
-  const apiRoute = this.configService.get<string>('ELLUCIAN_GRADE_POINT_AVERAGE_API_ROUTE', '');
-  const url = `${this.apiUrl}${apiRoute}?criteria={"student":{"id":"${studentGuid}"}}`;
-  return this.fetchFromEllucian(url);
-}
+  async getStudentGradePointAverages(studentGuid: string): Promise<any> {
+    const apiRoute = this.configService.get<string>('ELLUCIAN_GRADE_POINT_AVERAGE_API_ROUTE', '');
+    const url = `${this.apiUrl}${apiRoute}?criteria={"student":{"id":"${studentGuid}"}}`;
+    return this.fetchFromEllucian(url);
+  }
 
-}
+  }

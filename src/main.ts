@@ -16,7 +16,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
 
-  // Use the PORT environment variable or fall back to 3008 if it's not set
   const port = configService.get<number>('PORT') || 3008;
   await app.listen(port);
   console.log(`Application is running on: ${await app.getUrl()}`);
