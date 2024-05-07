@@ -20,11 +20,13 @@ export class CredentialController {
   @Post('/')
   async issue(@Body() data: any, @Res() response: Response): Promise<Response> {
     console.log('************* Credential controller ***************  /n');
-
+    console.log(data);
     if (
-      data.state == 'credential_acked' &&
-      data.credential_definition_id ==
-        this.configService.get<string>('CREDENTIAL_DEFINITION_ID')
+      data.state == 'offer_sent' &&
+      (data.credential_definition_id ==
+        this.configService.get<string>('STUDENTID_CREDENTIAL_DEFINITION_ID')
+      || data.credential_definition_id ==
+        this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID'))
     ) {
       this.credentialService.newIssue(data);
     }

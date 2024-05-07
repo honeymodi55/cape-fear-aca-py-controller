@@ -30,7 +30,7 @@ export class VerificationService {
         .post(
           send_message,
           {
-            content: this.configService.get<string>('VERIFICATION_MESSAGE'),
+            content: this.configService.get<string>('REQUEST_STUDENT_TRANSCRIPT_VERIFICATION_MESSAGE'),
           },
           requestConfig,
         )

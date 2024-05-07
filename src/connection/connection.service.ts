@@ -31,7 +31,7 @@ export class ConnectionService {
           send_message,
           {
             content: this.configService.get<string>(
-              'CAPE_FEAR_WELCOME_MESSAGE',
+              'SCHOOL_WELCOME_MESSAGE',
             ),
           },
           requestConfig,
