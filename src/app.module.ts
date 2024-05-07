@@ -1,23 +1,29 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { RouterModule } from '@nestjs/core';
+import { HttpModule } from '@nestjs/axios'; 
+
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConnectionModule } from './connection/connection.module';
 import { CredentialModule } from './credential/credential.module';
 import { VerificationModule } from './verification/verification.module';
 import { PingModule } from './ping/ping.module';
-import { RouterModule } from '@nestjs/core';
+import { RedisService } from './services/redis.service';
+import { EllucianService } from './ellucian/ellucian.service';
+import { EllucianController } from './ellucian/ellucian.controller';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    HttpModule, 
     ConnectionModule,
     CredentialModule,
     VerificationModule,
     PingModule,
-    RouterModule.register([
+    RouterModule.register([ 
       {
         path: 'topic',
         module: AppModule,
@@ -42,7 +48,14 @@ import { RouterModule } from '@nestjs/core';
       },
     ]),
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    RedisService,
+    EllucianService,
+  ],
+  controllers: [
+    AppController,
+    EllucianController,
+  ],
 })
 export class AppModule {}
