@@ -4,7 +4,7 @@ import { EllucianService } from './ellucian.service';
 import { StudentInfoDto } from './dto/student-info.dto';
 
 @ApiTags('Ellucian')
-@Controller('ellucian')
+@Controller()
 export class EllucianController {
   constructor(private readonly ellucianService: EllucianService) {}
 
@@ -14,6 +14,7 @@ export class EllucianController {
   @ApiResponse({ status: 200, description: 'The student information' })
   @ApiResponse({ status: 404, description: 'Student not found' })
   async getStudentInfo(@Query() query: StudentInfoDto) {
+    console.log('************* Ellucian API controller -student-info ***************  /n');
     try {
       await this.ellucianService.getAccessToken(); 
       const studentInfo = await this.ellucianService.getPerson(query.studentNumber);
@@ -80,6 +81,7 @@ export class EllucianController {
   @ApiResponse({ status: 200, description: 'The student name and GUID' })
   @ApiResponse({ status: 404, description: 'Student not found' })
   async getStudentName(@Query('studentNumber') studentNumber: string) {
+    console.log('************* Ellucian API controller -student-name ***************  /n');
     try {
       await this.ellucianService.getAccessToken();
       const person = await this.ellucianService.getPerson(studentNumber);
