@@ -28,7 +28,7 @@ export class CredentialService {
     if(connectionData.credential_definition_id ==
       this.configService.get<string>('STUDENTID_CREDENTIAL_DEFINITION_ID')) {
 
-      const message = await lastValueFrom(
+       message = await lastValueFrom(
         this.httpService
           .post(
             send_message,
@@ -43,7 +43,7 @@ export class CredentialService {
     if(connectionData.credential_definition_id ==
       this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID')) {
 
-      const message = await lastValueFrom(
+       message = await lastValueFrom(
         this.httpService
           .post(
             send_message,
