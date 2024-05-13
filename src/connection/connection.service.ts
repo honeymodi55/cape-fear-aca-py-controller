@@ -1,6 +1,6 @@
-import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config'; // Import ConfigService
+import { ConfigService } from '@nestjs/config';
+import { HttpService } from '@nestjs/axios';
 import { AxiosRequestConfig } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
 
@@ -8,15 +8,17 @@ import { lastValueFrom, map } from 'rxjs';
 export class ConnectionService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly configService: ConfigService, // Inject ConfigService
+    private readonly configService: ConfigService
   ) {}
 
-  async welcome(connectionData: any): Promise<boolean> {
-    const connection = connectionData.connection_id;
-    const send_message =
-      `${this.configService.get<string>('API_BASE_URL')}:8032/connections/` +
-      connection +
-      '/send-message';
+  /**
+   * Send a welcome message to the given connection.
+   * @param connectionData - Data for the active connection
+   */
+  async sendWelcomeMessage(connectionData: any): Promise<boolean> {
+    const connectionId = connectionData.connection_id;
+    const messageUrl = `${this.configService.get<string>('API_BASE_URL')}:8032/connections/${connectionId}/send-message`;
+
     const requestConfig: AxiosRequestConfig = {
       headers: {
         Authorization: `Bearer ${this.configService.get<string>('BEARER_TOKEN')}`,
@@ -24,21 +26,21 @@ export class ConnectionService {
       },
     };
 
-    console.log('Call REST ', send_message, ' Options ', requestConfig);
-    const message = await lastValueFrom(
+    console.log('Sending welcome message to connection:', connectionId);
+    console.log('Request URL:', messageUrl);
+    console.log('Request Configuration:', requestConfig);
+
+    const messageContent = {
+      content: this.configService.get<string>('SCHOOL_WELCOME_MESSAGE'),
+    };
+
+    const response = await lastValueFrom(
       this.httpService
-        .post(
-          send_message,
-          {
-            content: this.configService.get<string>(
-              'SCHOOL_WELCOME_MESSAGE',
-            ),
-          },
-          requestConfig,
-        )
-        .pipe(map((resp) => resp.data)),
+        .post(messageUrl, messageContent, requestConfig)
+        .pipe(map((resp) => resp.data))
     );
-    console.log('REST call returns ', message);
+
+    console.log('Response from the welcome message API:', response);
     return true;
   }
 }

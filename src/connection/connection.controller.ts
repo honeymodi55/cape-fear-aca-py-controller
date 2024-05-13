@@ -1,29 +1,37 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Req,
   Res,
   HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { ConnectionService } from './connection.service';
+import { EventsGateway } from '../events/events.gateway';
 
 @Controller()
 export class ConnectionController {
-  constructor(private readonly connectionService: ConnectionService) {}
+  constructor(private readonly connectionService: ConnectionService, private readonly eventsGateway: EventsGateway ) {}
 
   @Post('/')
-  async getHello(
-    @Body() data: any,
-    @Res() response: Response,
+  async handleConnection(
+    @Body() connectionData: any,
+    @Res() response: Response
   ): Promise<Response> {
     console.log('************* Connection controller ***************  /n');
-    console.log(data);
-    if (data.state == 'active') {
-      this.connectionService.welcome(data);
+    console.log('Handling connection request:', connectionData);
+
+    if (connectionData.state === 'active') {
+      console.log('Connection is active.');
+      this.eventsGateway.sendEventUpdate({
+        message: 'New event data', 
+        timestamp: new Date(),
+        details: connectionData 
+      });
+
+      await this.connectionService.sendWelcomeMessage(connectionData);
     }
-    return response.status(HttpStatus.OK).send('OK');
+
+    return response.status(HttpStatus.OK).send('Connection request handled successfully');
   }
 }
