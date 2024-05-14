@@ -24,11 +24,20 @@ export class CredentialController {
     console.log('************* Credential controller ***************  /n');
     console.log(data);
     if (
+      data.state == 'offer_sent'
+    ){
+      this.eventsGateway.sendEventUpdate({
+        message: 'New event data: Credential Offer Sent', 
+        timestamp: new Date(),
+        details: data 
+      });
+    }
+    if (
       data.state == 'credential_acked'
     ){
-      console.log('Student Recieved the Student ID ...v');
+      console.log('Student Recieved the Student ID ...');
       this.eventsGateway.sendEventUpdate({
-        message: 'New event data', 
+        message: 'New event data: Credential accecpted by the receiver', 
         timestamp: new Date(),
         details: data 
       });

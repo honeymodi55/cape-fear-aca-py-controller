@@ -4,9 +4,7 @@ import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
   cors: {
-    origin: 'http://localhost:5173', // Adjust this to more strict origins as per your security requirements
-    // credentials: true, // Depending on whether you need to support credentials
-    // methods: ['GET', 'POST'] // Specify allowed methods, if needed
+    origin: '*',
   }
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
@@ -29,7 +27,7 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   }
 
   sendEventUpdate(data: any) {
-    console.log('Sending event update:', data); // Ensure this logs when events are supposed to be sent
+    console.log('Sending event update:', data); 
     this.server.emit('eventUpdate', data);
   }
 }
