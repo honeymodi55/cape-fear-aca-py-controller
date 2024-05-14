@@ -7,21 +7,28 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get(ConfigService);
 
-  //Dynamically allow cors, you can add the url here?
+  // //Dynamically allow cors, you can add the url here?
+  // app.enableCors({
+  //   origin: (origin, callback) => {
+  //     const allowedOrigins = [
+  //                             configService.get<string>('CORS_ALLOWED_URL_1') || 'http://localhost:5173', 
+  //                             configService.get<string>('CORS_ALLOWED_URL_1') || 'https://example.com'
+  //                           ];
+  //     if (!origin || allowedOrigins.includes(origin)) {
+  //       callback(null, true);
+  //     } else {
+  //       callback(new Error('Not allowed by CORS'), false);
+  //     }
+  //   },
+  //   credentials: true, // Optional: if your frontend needs to send cookies or authentication information
+  // });
+
+  // Allow CORS for all origins
   app.enableCors({
-    origin: (origin, callback) => {
-      const allowedOrigins = [
-                              configService.get<string>('CORS_ALLOWED_URL_1') || 'http://localhost:5173', 
-                              configService.get<string>('CORS_ALLOWED_URL_1') || 'https://example.com'
-                            ];
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'), false);
-      }
-    },
-    credentials: true, // Optional: if your frontend needs to send cookies or authentication information
+    origin: true, // This will allow all origins
+    // credentials: true, // Optional: if your frontend needs to send cookies or authentication information
   });
+
   
 
   const config = new DocumentBuilder()
