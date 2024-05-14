@@ -24,7 +24,7 @@ import { EventsGateway } from './events/events.gateway';
     CredentialModule,
     VerificationModule,
     PingModule,
-    EllucianModule,
+    EllucianModule, // Keep this import for dependency injection, but remove it from the 'topic' path
     RouterModule.register([
       {
         path: 'topic',
@@ -50,8 +50,14 @@ import { EventsGateway } from './events/events.gateway';
             path: 'present_proof',
             module: VerificationModule,
           },
+        ],
+      },
+      {
+        path: 'sis',
+        module: EllucianModule,
+        children: [
           {
-            path: 'ellucian',
+            path: '',
             module: EllucianModule,
           },
         ],

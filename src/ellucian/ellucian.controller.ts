@@ -3,18 +3,20 @@ import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { EllucianService } from './ellucian.service';
 import { StudentInfoDto } from './dto/student-info.dto';
 
-@ApiTags('Ellucian')
+@ApiTags('CapeFear SIS')
 @Controller()
 export class EllucianController {
-  constructor(private readonly ellucianService: EllucianService) {}
+  constructor(
+    private readonly ellucianService: EllucianService,
+  ) {}
 
-  @Get('student-info')
+  @Get('student-transcript')
   @ApiOperation({ summary: 'Retrieve student information by student number' })
   @ApiQuery({ name: 'studentNumber', required: true, type: String, description: 'The student number' })
   @ApiResponse({ status: 200, description: 'The student information' })
   @ApiResponse({ status: 404, description: 'Student not found' })
   async getStudentInfo(@Query() query: StudentInfoDto) {
-    console.log('************* Ellucian API controller -student-info ***************  /n');
+    console.log('************* Ellucian API controller -student-transcript ***************  /n');
     try {
       await this.ellucianService.getAccessToken(); 
       const studentInfo = await this.ellucianService.getPerson(query.studentNumber);
@@ -75,31 +77,18 @@ export class EllucianController {
   }
 
 
-  @Get('student-name')
+  @Get('student-id')
   @ApiOperation({ summary: 'Retrieve student name and GUID by student number' })
   @ApiQuery({ name: 'studentNumber', required: true, type: String, description: 'The student number' })
   @ApiResponse({ status: 200, description: 'The student name and GUID' })
   @ApiResponse({ status: 404, description: 'Student not found' })
   async getStudentName(@Query('studentNumber') studentNumber: string) {
-    console.log('************* Ellucian API controller -student-name ***************  /n');
+    console.log('************* Ellucian API controller -student-ID ***************  /n');
     try {
-      await this.ellucianService.getAccessToken();
-      const person = await this.ellucianService.getPerson(studentNumber);
-      if (!person || !person.length) {
-        throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
-      }
-      const studentName = {
-        fullName: person[0].names[0]?.fullName ?? null,
-        firstName: person[0].names[0]?.firstName ?? null,
-        middleName: person[0].names[0]?.middleName ?? null,
-        lastName: person[0].names[0]?.lastName ?? null,
-      };
-      const studentGUID = person[0].id;
-
-      return { studentName, studentGUID };
+      const studentIdCred = await this.ellucianService.getStudentIdCred(studentNumber);
+      return { studentIdCred };
     } catch (error) {
       throw new HttpException('Failed to retrieve student information', HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
   }
 }

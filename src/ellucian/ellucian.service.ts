@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
@@ -127,6 +127,25 @@ export class EllucianService {
     const apiRoute = this.configService.get<string>('ELLUCIAN_GRADE_POINT_AVERAGE_API_ROUTE', '');
     const url = `${this.apiUrl}${apiRoute}?criteria={"student":{"id":"${studentGuid}"}}`;
     return this.fetchFromEllucian(url);
+  }
+
+
+  async getStudentIdCred(studentNumber: string) {
+    await this.getAccessToken();
+    const person = await this.getPerson(studentNumber);
+    if (!person || !person.length) {
+      throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
+    }
+    return {
+      fullName: person[0].names[0]?.fullName ?? null,
+      firstName: person[0].names[0]?.firstName ?? null,
+      middleName: person[0].names[0]?.middleName ?? null,
+      lastName: person[0].names[0]?.lastName ?? null,
+      schoolPrimaryEmail: person[0].emails.find(email => email.type.emailType === "school" && email.preference === "primary")?.address ?? null,
+      personalEmail: person[0].emails.find(email => email.type.emailType === "personal")?.address ?? null,
+      studentsId: person[0].studentsId.studentsId ?? null,
+      studentGUID: person[0].id
+    };
   }
 
   }
