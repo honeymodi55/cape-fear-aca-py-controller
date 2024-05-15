@@ -1,13 +1,11 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Req,
   Res,
   HttpStatus,
 } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { CredentialService } from './credential.service';
 import { ConfigService } from '@nestjs/config';
 import { EventsGateway } from '../events/events.gateway';
@@ -17,40 +15,48 @@ export class CredentialController {
   constructor(
     private readonly credentialService: CredentialService,
     private readonly configService: ConfigService,
-    private readonly eventsGateway: EventsGateway 
+    private readonly eventsGateway: EventsGateway
   ) {}
+
   @Post('/')
   async issue(@Body() data: any, @Res() response: Response): Promise<Response> {
-    console.log('************* Credential controller ***************  /n');
+    console.log('************* Credential controller ***************');
     console.log(data);
-    if (
-      data.state == 'offer_sent'
-    ){
-      this.eventsGateway.sendEventUpdate({
-        message: 'New event data: Credential Offer Sent', 
-        timestamp: new Date(),
-        details: data 
-      });
+
+    try {
+      if (data.state === 'offer_sent') {
+        console.log('Credential Offer sent...');
+
+        // Emit event for offer_sent
+        this.emitEvent(data);
+      }
+
+      if (data.state === 'credential_acked') {
+        console.log('Credential Accepted ...');
+      }
+
+      if (
+        data.state === 'offer_sent' &&
+        (data.credential_definition_id === this.configService.get<string>('STUDENTID_CREDENTIAL_DEFINITION_ID') ||
+          data.credential_definition_id === this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID'))
+      ) {
+        await this.credentialService.newIssue(data);
+      }
+
+      return response.status(HttpStatus.OK).send('OK');
+    } catch (error) {
+      console.error("Error handling credential issuance:", error);
+      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Failed to handle credential issuance');
     }
-    if (
-      data.state == 'credential_acked'
-    ){
-      console.log('Student Recieved the Student ID ...');
-      this.eventsGateway.sendEventUpdate({
-        message: 'New event data: Credential accecpted by the receiver', 
-        timestamp: new Date(),
-        details: data 
-      });
-    }
-    if (
-      data.state == 'offer_sent' &&
-      (data.credential_definition_id ==
-        this.configService.get<string>('STUDENTID_CREDENTIAL_DEFINITION_ID')
-      || data.credential_definition_id ==
-        this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID'))
-    ) {
-      this.credentialService.newIssue(data);
-    }
-    return response.status(HttpStatus.OK).send('OK');
+  }
+
+  private emitEvent(data: any) {
+    const eventDetails = {
+      attributes: data.attributes || [],
+      timestamp: new Date(),
+      details: data,
+    };
+
+    this.eventsGateway.sendEventUpdate(eventDetails);
   }
 }
