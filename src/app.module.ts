@@ -12,6 +12,7 @@ import { PingModule } from './ping/ping.module';
 import { EllucianModule } from './ellucian/ellucian.module';
 import { OutOfBandModule } from './out_of_band/out_of_band.module'; 
 import { EventsGateway } from './events/events.gateway';
+import { BasicMessagesModule } from './basicmessages/basicmessages.module';
 
 @Module({
   imports: [
@@ -24,7 +25,8 @@ import { EventsGateway } from './events/events.gateway';
     CredentialModule,
     VerificationModule,
     PingModule,
-    EllucianModule, // Keep this import for dependency injection, but remove it from the 'topic' path
+    EllucianModule,
+    BasicMessagesModule, 
     RouterModule.register([
       {
         path: 'topic',
@@ -49,6 +51,10 @@ import { EventsGateway } from './events/events.gateway';
           {
             path: 'present_proof',
             module: VerificationModule,
+          }, 
+          {
+            path: 'basicmessages',
+            module: BasicMessagesModule,
           },
         ],
       },
