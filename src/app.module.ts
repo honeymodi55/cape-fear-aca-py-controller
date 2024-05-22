@@ -2,7 +2,7 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { RouterModule } from '@nestjs/core';
-import { HttpModule } from '@nestjs/axios'; 
+import { HttpModule } from '@nestjs/axios';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConnectionModule } from './connection/connection.module';
@@ -10,8 +10,9 @@ import { CredentialModule } from './credential/credential.module';
 import { VerificationModule } from './verification/verification.module';
 import { PingModule } from './ping/ping.module';
 import { EllucianModule } from './ellucian/ellucian.module';
-import { OutOfBandModule } from './out_of_band/out_of_band.module'; 
+import { OutOfBandModule } from './out_of_band/out_of_band.module';
 import { EventsGateway } from './events/events.gateway';
+import { MetadataModule } from './metadata/metadata.module';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { EventsGateway } from './events/events.gateway';
         ],
       },
     ]),
+    MetadataModule,
   ],
   providers: [AppService, EventsGateway],
   controllers: [AppController],

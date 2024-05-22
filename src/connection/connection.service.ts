@@ -8,7 +8,7 @@ import { lastValueFrom, map } from 'rxjs';
 export class ConnectionService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
   /**
@@ -37,7 +37,7 @@ export class ConnectionService {
     const response = await lastValueFrom(
       this.httpService
         .post(messageUrl, messageContent, requestConfig)
-        .pipe(map((resp) => resp.data))
+        .pipe(map((resp) => resp.data)),
     );
 
     console.log('Response from the welcome message API:', response);
