@@ -5,11 +5,16 @@ import { HttpModule } from '@nestjs/axios';
 import { EventsGateway } from 'src/events/events.gateway';
 import { MetadataModule } from '../metadata/metadata.module';
 import { ConfigService } from '@nestjs/config';
-import { MetadataService } from '../metadata/metadata.service';
+import { ConnectionService } from '../connection/connection.service';
 
 @Module({
   imports: [HttpModule, MetadataModule],
   controllers: [CredentialController],
-  providers: [CredentialService, ConfigService, EventsGateway, MetadataService],
+  providers: [
+    CredentialService,
+    ConfigService,
+    EventsGateway,
+    ConnectionService,
+  ],
 })
 export class CredentialModule {}

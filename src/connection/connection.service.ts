@@ -11,10 +11,6 @@ export class ConnectionService {
     private readonly configService: ConfigService,
   ) {}
 
-  /**
-   * Send a welcome message to the given connection.
-   * @param connectionData - Data for the active connection
-   */
   async sendWelcomeMessage(connectionData: any): Promise<boolean> {
     const connectionId = connectionData.connection_id;
     const messageUrl = `${this.configService.get<string>('API_BASE_URL')}:8032/connections/${connectionId}/send-message`;

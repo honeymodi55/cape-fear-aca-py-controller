@@ -4,6 +4,7 @@ import { CredentialService } from './credential.service';
 import { ConfigService } from '@nestjs/config';
 import { EventsGateway } from '../events/events.gateway';
 import { MetadataService } from '../metadata/metadata.service';
+import { ConnectionService } from '../connection/connection.service';
 
 @Controller()
 export class CredentialController {
@@ -12,6 +13,7 @@ export class CredentialController {
     private readonly configService: ConfigService,
     private readonly eventsGateway: EventsGateway,
     private readonly metadataService: MetadataService,
+    private readonly connectionService: ConnectionService,
   ) {}
 
   @Post('/')
@@ -87,23 +89,9 @@ export class CredentialController {
         }
       }
 
-      if (
-        data.state === 'offer_sent' &&
-        (data.credential_definition_id ===
-          this.configService.get<string>(
-            'STUDENTID_CREDENTIAL_DEFINITION_ID',
-          ) ||
-          data.credential_definition_id ===
-            this.configService.get<string>(
-              'TRANSCRIPT_CREDENTIAL_DEFINITION_ID',
-            ))
-      ) {
-        await this.credentialService.newIssue(data);
-      }
-
       return response.status(HttpStatus.OK).send('OK');
     } catch (error) {
-      console.error('Error handling credential issuance:', error);
+      console.error('Error handling credential issuance:', error.message);
       return response
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
         .send('Failed to handle credential issuance');

@@ -6,9 +6,10 @@ import { EventsGateway } from 'src/events/events.gateway';
 import { RedisService } from '../services/redis.service';
 import { EllucianService } from 'src/ellucian/ellucian.service';
 import { MetadataService } from 'src/metadata/metadata.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [HttpModule],
+  imports: [HttpModule, ConfigModule],
   controllers: [ConnectionController],
   providers: [
     ConnectionService,

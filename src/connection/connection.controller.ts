@@ -22,7 +22,7 @@ export class ConnectionController {
     @Res() response: Response,
   ): Promise<Response> {
     console.log('************* Connection controller ***************');
-    console.log('Handling connection request:', connectionData);
+    console.log(connectionData);
 
     try {
       if (connectionData.state === 'request') {
@@ -58,14 +58,6 @@ export class ConnectionController {
 
       if (studentIdCred) {
         attributes = this.createAttributes(studentIdCred);
-        // Update connection metadata
-        await this.metadataService.updateConnectionMetadata(
-          connectionData.connection_id,
-          {
-            name: `${studentIdCred.firstName} ${studentIdCred.lastName}`,
-            student_number: studentIdCred.studentsId,
-          },
-        );
       } else {
         console.error(
           'Unable to obtain Student info from Student Information System',
