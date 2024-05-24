@@ -88,6 +88,19 @@ export class CredentialController {
           console.error('Credential attributes are undefined.');
         }
       }
+      if (
+        data.state === 'offer_sent' &&
+        (data.credential_definition_id ===
+          this.configService.get<string>(
+            'STUDENTID_CREDENTIAL_DEFINITION_ID',
+          ) ||
+          data.credential_definition_id ===
+            this.configService.get<string>(
+              'TRANSCRIPT_CREDENTIAL_DEFINITION_ID',
+            ))
+      ) {
+        await this.credentialService.newIssue(data);
+      }
 
       return response.status(HttpStatus.OK).send('OK');
     } catch (error) {

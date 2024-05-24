@@ -13,8 +13,6 @@ export class CredentialService {
   ) {}
 
   async newIssue(connectionData: any): Promise<boolean> {
-    console.log('newIssue method called with data:', connectionData);
-
     const connection = connectionData.connection_id;
     const send_message =
       `${this.configService.get<string>('API_BASE_URL')}:8032/connections/` +
@@ -28,21 +26,11 @@ export class CredentialService {
     };
     console.log('Call REST ', send_message, ' Options ', requestConfig);
 
-    console.log(
-      'Student ID Credential Definition ID:',
-      this.configService.get<string>('STUDENTID_CREDENTIAL_DEFINITION_ID'),
-    );
-    console.log(
-      'Connection Data Credential Definition ID:',
-      connectionData.credential_definition_id,
-    );
-
     let message = '';
     if (
-      connectionData.credential_definition_id ===
+      connectionData.credential_definition_id ==
       this.configService.get<string>('STUDENTID_CREDENTIAL_DEFINITION_ID')
     ) {
-      console.log('Sending student ID message...');
       try {
         message = await lastValueFrom(
           this.httpService
@@ -57,7 +45,6 @@ export class CredentialService {
             )
             .pipe(map((resp) => resp.data)),
         );
-        console.log('Student ID message sent successfully:', message);
       } catch (error) {
         console.error('Error sending student ID message:', error);
       }
@@ -69,7 +56,6 @@ export class CredentialService {
       connectionData.credential_definition_id ===
       this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID')
     ) {
-      console.log('Sending transcript message...');
       try {
         message = await lastValueFrom(
           this.httpService
@@ -84,7 +70,6 @@ export class CredentialService {
             )
             .pipe(map((resp) => resp.data)),
         );
-        console.log('Transcript message sent successfully:', message);
       } catch (error) {
         console.error('Error sending transcript message:', error);
       }
