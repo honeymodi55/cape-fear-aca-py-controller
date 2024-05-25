@@ -34,7 +34,9 @@ export class MetadataService {
     const currentMetadata = await this.fetchCurrentMetadata(connId);
 
     currentMetadata.results = {
-      ...metadata,
+      student_id: metadata.student_id,
+      first_name: metadata.first_name,
+      last_name: metadata.last_name,
     };
 
     const url = `${this.apiUrl}:8032/connections/${connId}/metadata`;

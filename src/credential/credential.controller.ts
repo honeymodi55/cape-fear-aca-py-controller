@@ -74,9 +74,9 @@ export class CredentialController {
             await this.metadataService.updateConnectionMetadata(
               data.connection_id,
               {
+                student_id: StudentID,
                 first_name: First,
                 last_name: Last,
-                student_id: StudentID,
               },
             );
           } else {
