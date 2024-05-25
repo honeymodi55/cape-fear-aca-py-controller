@@ -11,7 +11,7 @@ async function bootstrap() {
   // app.enableCors({
   //   origin: (origin, callback) => {
   //     const allowedOrigins = [
-  //                             configService.get<string>('CORS_ALLOWED_URL_1') || 'http://localhost:5173', 
+  //                             configService.get<string>('CORS_ALLOWED_URL_1') || 'http://localhost:5173',
   //                             configService.get<string>('CORS_ALLOWED_URL_1') || 'https://example.com'
   //                           ];
   //     if (!origin || allowedOrigins.includes(origin)) {
@@ -28,8 +28,6 @@ async function bootstrap() {
     origin: true, // This will allow all origins
     // credentials: true, // Optional: if your frontend needs to send cookies or authentication information
   });
-
-  
 
   const config = new DocumentBuilder()
     .setTitle('Cape Fear API Client')

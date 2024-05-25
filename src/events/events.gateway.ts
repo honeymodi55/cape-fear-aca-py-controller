@@ -1,11 +1,19 @@
 // src/events/events.gateway.ts
-import { WebSocketGateway, WebSocketServer, SubscribeMessage, OnGatewayConnection, OnGatewayDisconnect, MessageBody, ConnectedSocket } from '@nestjs/websockets';
+import {
+  WebSocketGateway,
+  WebSocketServer,
+  SubscribeMessage,
+  OnGatewayConnection,
+  OnGatewayDisconnect,
+  MessageBody,
+  ConnectedSocket,
+} from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
   cors: {
     origin: '*',
-  }
+  },
 })
 export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
   @WebSocketServer() server: Server;
@@ -20,14 +28,19 @@ export class EventsGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
   // Listen for 'requestData' events from clients
   @SubscribeMessage('requestData')
-  handleRequestData(@ConnectedSocket() client: Socket, @MessageBody() data: any) {
+  handleRequestData(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: any,
+  ) {
     console.log(`Data requested by ${client.id}:`, data);
     // Process the request and respond, for example:
-    this.server.to(client.id).emit('responseData', { data: 'Here is your requested data' });
+    this.server
+      .to(client.id)
+      .emit('responseData', { data: 'Here is your requested data' });
   }
 
   sendEventUpdate(data: any) {
-    console.log('Sending event update:', data); 
+    //console.log('Sending event update:', data);
     this.server.emit('eventUpdate', data);
   }
 }

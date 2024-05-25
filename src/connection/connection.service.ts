@@ -8,13 +8,9 @@ import { lastValueFrom, map } from 'rxjs';
 export class ConnectionService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
   ) {}
 
-  /**
-   * Send a welcome message to the given connection.
-   * @param connectionData - Data for the active connection
-   */
   async sendWelcomeMessage(connectionData: any): Promise<boolean> {
     const connectionId = connectionData.connection_id;
     const messageUrl = `${this.configService.get<string>('API_BASE_URL')}:8032/connections/${connectionId}/send-message`;
@@ -33,14 +29,18 @@ export class ConnectionService {
     const messageContent = {
       content: this.configService.get<string>('SCHOOL_WELCOME_MESSAGE'),
     };
+    try {
+      const response = await lastValueFrom(
+        this.httpService
+          .post(messageUrl, messageContent, requestConfig)
+          .pipe(map((resp) => resp.data)),
+      );
 
-    const response = await lastValueFrom(
-      this.httpService
-        .post(messageUrl, messageContent, requestConfig)
-        .pipe(map((resp) => resp.data))
-    );
-
-    console.log('Response from the welcome message API:', response);
-    return true;
+      console.log('Response from the welcome message API:', response);
+      return true;
+    } catch (error) {
+      console.error('Error sending welcome message:', error);
+      return false;
+    }
   }
 }
