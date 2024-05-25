@@ -46,7 +46,19 @@ export class ConnectionController {
 
   private async handleActiveState(connectionData: any) {
     const alias = connectionData.alias;
+    if (!alias) {
+      console.error('Alias is undefined');
+      await this.connectionService.sendWelcomeMessage(connectionData);
+      return;
+    }
+
     const studentNumber = this.extractStudentNumber(alias);
+    if (!studentNumber) {
+      console.error('Student number is undefined');
+      await this.connectionService.sendWelcomeMessage(connectionData);
+      return;
+    }
+
     console.log('Extracted studentNumber:', studentNumber);
 
     let attributes: any;
@@ -77,8 +89,9 @@ export class ConnectionController {
     await this.connectionService.sendWelcomeMessage(connectionData);
   }
 
-  private extractStudentNumber(alias: string): string {
-    return alias.split(' -studentID- ')[1];
+  private extractStudentNumber(alias: string): string | null {
+    const parts = alias.split(' -studentID- ');
+    return parts.length > 1 ? parts[1] : null;
   }
 
   private createAttributes(studentIdCred: any): any[] {
