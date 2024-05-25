@@ -1,13 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Req,
-  Res,
-  HttpStatus,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+// verification.controller.ts
+import { Controller, Post, Body, Res, HttpStatus } from '@nestjs/common';
+import { Response } from 'express';
 import { VerificationService } from './verification.service';
 
 @Controller()
@@ -21,8 +14,10 @@ export class VerificationController {
   ): Promise<Response> {
     console.log('************* Verification controller ***************  /n');
     console.log(data);
-    if (data?.state == 'request_sent') {
-      this.verificationService.verify(data);
+    if (data?.state === 'request_sent') {
+      await this.verificationService.verify(data);
+    } else if (data?.state === 'verified') {
+      await this.verificationService.handleVerifiedState(data);
     }
     return response.status(HttpStatus.OK).send('OK');
   }
