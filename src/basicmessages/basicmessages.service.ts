@@ -4,16 +4,14 @@ import { HttpService } from '@nestjs/axios';
 import { parse } from '@nas-veridid/workflow-parser';
 import { AxiosRequestConfig } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
-// import { WorkflowService } from '../workflow/workflow.service';
+
 
 
 
 @Injectable()
 export class BasicMessagesService {
-  private messages = [];
-
+ 
   constructor(
-    // private readonly workflowService: WorkflowService,
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {}
