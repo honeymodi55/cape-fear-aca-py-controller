@@ -22,21 +22,15 @@ export class ConnectionService {
       },
     };
 
-    console.log('Sending welcome message to connection:', connectionId);
-    console.log('Request URL:', messageUrl);
-    console.log('Request Configuration:', requestConfig);
-
     const messageContent = {
       content: this.configService.get<string>('SCHOOL_WELCOME_MESSAGE'),
     };
     try {
-      const response = await lastValueFrom(
+     await lastValueFrom(
         this.httpService
           .post(messageUrl, messageContent, requestConfig)
           .pipe(map((resp) => resp.data)),
       );
-
-      console.log('Response from the welcome message API:', response);
       return true;
     } catch (error) {
       console.error('Error sending welcome message:', error);
