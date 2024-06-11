@@ -18,16 +18,4 @@ export class BasicMessagesController {
       return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Failed to handle basic message request');
     }
   }
-
-  @Get('/')
-  async getBasicMessages(@Res() response: Response): Promise<Response> {
-    try {
-      const messages = await this.basicMessagesService.getMessages();
-      console.log ("messages from getBasicMassages", messages)
-      return response.status(HttpStatus.OK).json(messages);
-    } catch (error) {
-      console.error('Error retrieving basic messages:', error);
-      return response.status(HttpStatus.INTERNAL_SERVER_ERROR).send('Failed to retrieve basic messages');
-    }
-  }
 }

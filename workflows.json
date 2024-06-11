@@ -1,0 +1,187 @@
+[
+    {
+      "name": "Welcome Menu",
+      "workflowID": "root-menu",
+      "formatVersion": "0.0.1",
+      "initialState": "MenuDisplayed",
+      "render": [
+        {
+          "stylesID": "",
+          "type": "button",
+          "styles": {
+            "fontType": "Arial",
+            "textColor": "#000000",
+            "backgroundColor": "#ffffff"
+          }
+        }
+      ],
+      "states": [
+        {
+          "stateID": "MenuDisplayed",
+          "displayData": [
+            { "type": "image", "url": "" },
+            { "type": "title", "text": "Your college adventure starts here!" },
+            { "type": "text", "text": "We are here to support you every step of the way and can't wait to connect with you. If you aren't sure where to start, consider checking out our action menu or call one of our team members." },
+            { "type": "button", "actionID": "selectNewStudentOrientation", "label": "New Student Orientation" },
+            { "type": "button", "actionID": "selectRequestTranscript", "label": "Request a Transcript" },
+            { "type": "button", "actionID": "selectFinancialAid", "label": "Financial Aid" },
+            { "type": "button", "actionID": "selectSummerCamps", "label": "Summer Camps and Programs" }
+          ],
+          "transitions": [
+            { "actionID": "selectNewStudentOrientation", "type": "workflow", "value": "NewStudentOrientation", "condition": "userType === 'new'" },
+            { "actionID": "selectSummerCamps", "type": "workflow", "value": "SummerCamps", "condition": "age < 18" },
+            { "actionID": "selectFinancialAid", "type": "workflow", "value": "FinancialAid", "condition": "needsFinancialAid === true" },
+            { "actionID": "selectRequestTranscript", "type": "workflow", "value": "RequestTranscript", "condition": "hasGraduated === true" }
+          ],
+          "actions": [{}]
+        }
+      ]
+    },
+    {
+      "name": "New Student Orientation",
+      "workflowID": "NewStudentOrientation",
+      "formatVersion": "0.0.1",
+      "initialState": "chooseOption",
+      "render": [
+        {
+          "styles": {
+            "textColor": "#000000",
+            "backgroundColor": "#ffffff",
+            "fontType": "Arial"
+          }
+        }
+      ],
+      "states": [
+        {
+          "stateID": "chooseOption",
+          "displayData": [
+            { "type": "image", "url": "https://cfcc.edu/wp-content/uploads/2019/06/cfcc-logo.png" },
+            { "type": "title", "text": "We cannot wait to meet you at New Student Orientation!" },
+            { "type": "text", "text": "New Student Orientation is a chance to get acquainted with campus resources, meet other new students. Day Session Details:- Access the Wilmington Campus map (downtown). Evening Session Details:- Access the North Campus map (Castle Hayne)" },
+            { "type": "button", "actionID": "selectDaySession", "label": "Reserve: Day Session" },
+            { "type": "button", "actionID": "selectEveningSession", "label": "Reserve: Evening Session" }
+          ],
+          "transitions": [
+            { "actionID": "selectDaySession", "type": "state", "value": "DaySession", "condition": true },
+            { "actionID": "selectEveningSession", "type": "state", "value": "EveningSession", "condition": true }
+          ],
+          "actions": [{}]
+        },
+        {
+          "stateID": "EveningSession",
+          "displayData": [
+            { "type": "title", "text": "Evening Session" },
+            { "type": "text", "text": "Evening Session Details:- Access the North Campus map (Castle Hayne)" },
+            { "type": "button", "actionID": "goHome", "label": "Go back to home menu" }
+          ],
+          "transitions": [
+            { "actionID": "goHome", "type": "workflow", "value": "root-menu", "condition": true }
+          ],
+          "actions": [{}]
+        },
+        {
+          "stateID": "DaySession",
+          "displayData": [
+            { "type": "title", "text": "Day Session" },
+            { "type": "text", "text": "Day Session Details:- Access the Wilmington Campus map (downtown)" },
+            { "type": "button", "actionID": "goHome", "label": "Go back to home menu" }
+          ],
+          "transitions": [
+            { "actionID": "goHome", "type": "workflow", "value": "root-menu", "condition": true }
+          ],
+          "actions": [{}]
+        }
+      ]
+    },
+    {
+      "name": "Request Transcript",
+      "workflowID": "RequestTranscript",
+      "formatVersion": "0.0.1",
+      "initialState": "UnderConstruction",
+      "render": [
+        {
+          "styles": {
+            "textColor": "#000000",
+            "backgroundColor": "#ffffff",
+            "fontType": "Arial"
+          }
+        }
+      ],
+      "states": [
+        {
+          "stateID": "UnderConstruction",
+          "displayData": [
+            { "type": "image", "url": "https://cfcc.edu/wp-content/uploads/2019/06/cfcc-logo.png" },
+            { "type": "title", "text": "Under Construction" },
+            { "type": "text", "text": "We are working on it. Please try other options." },
+            { "type": "button", "actionID": "goHome", "label": "Go back to home menu" }
+          ],
+          "transitions": [
+            { "actionID": "goHome", "type": "workflow", "value": "root-menu", "condition": true }
+          ],
+          "actions": [{}]
+        }
+      ]
+    },
+    {
+      "name": "Financial Aid",
+      "workflowID": "FinancialAid",
+      "formatVersion": "0.0.1",
+      "initialState": "UnderConstruction",
+      "render": [
+        {
+          "styles": {
+            "textColor": "#000000",
+            "backgroundColor": "#ffffff",
+            "fontType": "Arial"
+          }
+        }
+      ],
+      "states": [
+        {
+          "stateID": "UnderConstruction",
+          "displayData": [
+            { "type": "image", "url": "https://cfcc.edu/wp-content/uploads/2019/06/cfcc-logo.png" },
+            { "type": "title", "text": "Under Construction" },
+            { "type": "text", "text": "We are working on it. Please try other options." },
+            { "type": "button", "actionID": "goHome", "label": "Go back to home menu" }
+          ],
+          "transitions": [
+            { "actionID": "goHome", "type": "workflow", "value": "root-menu", "condition": true }
+          ],
+          "actions": [{}]
+        }
+      ]
+    },
+    {
+      "name": "Summer Camp",
+      "workflowID": "SummerCamps",
+      "formatVersion": "0.0.1",
+      "initialState": "UnderConstruction",
+      "render": [
+        {
+          "styles": {
+            "textColor": "#000000",
+            "backgroundColor": "#ffffff",
+            "fontType": "Arial"
+          }
+        }
+      ],
+      "states": [
+        {
+          "stateID": "UnderConstruction",
+          "displayData": [
+            { "type": "image", "url": "https://cfcc.edu/wp-content/uploads/2019/06/cfcc-logo.png" },
+            { "type": "title", "text": "Under Construction" },
+            { "type": "text", "text": "We are working on it. Please try other options." },
+            { "type": "button", "actionID": "goHome", "label": "Go back to home menu" }
+          ],
+          "transitions": [
+            { "actionID": "goHome", "type": "workflow", "value": "root-menu", "condition": true }
+          ],
+          "actions": [{}]
+        }
+      ]
+    }    
+  ]
+  
