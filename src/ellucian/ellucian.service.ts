@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { RedisService } from '../services/redis.service';
-import * as jwt from 'jsonwebtoken'; 
+import * as jwt from 'jsonwebtoken';
 
 @Injectable()
 export class EllucianService {
@@ -30,28 +30,27 @@ export class EllucianService {
     const cachedToken = await this.redisService.get(tokenKey);
     const cachedExpiry = await this.redisService.get(expiryKey);
 
-  
+
     if (cachedToken && cachedExpiry && Number(cachedExpiry) > Date.now()) {
       this.accessToken = cachedToken;
       console.log('Using cached access token');
       return;
     }
-  
+
     console.log('Fetching new access token');
     const response = await firstValueFrom(this.httpService.post(this.authUrl, {}, {
       headers: { Authorization: `Bearer ${this.configService.get<string>('ELLUCIAN_API_KEY')}` }
     }).pipe(map(res => res.data)));
-  
+
     const decodedToken = jwt.decode(response) as any;
     const currentTime = Date.now();
     const expiresIn = Math.floor((decodedToken.exp * 1000 - currentTime) / 1000);
-  
+
     await this.redisService.set(tokenKey, response, expiresIn);
     await this.redisService.set(expiryKey, (currentTime + expiresIn * 1000).toString());
-  
+
     this.accessToken = response;
   }
-  
 
   async getPerson(studentNumber: string): Promise<any> {
     if (!studentNumber) {
@@ -59,16 +58,24 @@ export class EllucianService {
     }
 
     const apiRoute = this.configService.get<string>('ELLUCIAN_PERSON_API_ROUTE', '');
-    const url = `${this.apiUrl}${apiRoute}?criteria={"credentials":[{"type":"colleaguePersonId","value":"${studentNumber}"}]}`;
+    const criteria = encodeURIComponent(`{"credentials":[{"type":"colleaguePersonId","value":"${studentNumber}"}]}`);
+    const url = `${this.apiUrl}${apiRoute}?criteria=${criteria}`;
 
     try {
-      const response = await firstValueFrom(this.httpService.get(url, { headers: { Authorization: `Bearer ${this.accessToken}` }})
-      .pipe(
-        map(response => response.data)
-      ));
+      const response = await firstValueFrom(
+        this.httpService.get(url, {
+          headers: {
+            'Authorization': `Bearer ${this.accessToken}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        }).pipe(
+          map(response => response.data)
+        )
+      );
       return response;
     } catch (error) {
-      console.error('Error fetching student information:', error);
+      console.error('Error fetching student information:', error.response ? error.response.data : error.message);
       throw new Error('Failed to fetch student information');
     }
   }
@@ -76,7 +83,12 @@ export class EllucianService {
   private async fetchFromEllucian(url: string): Promise<any> {
     try {
       const response = await firstValueFrom(this.httpService.get(url, {
-        headers: { Authorization: `Bearer ${this.accessToken}` }
+        headers: {
+          Authorization: `Bearer ${this.accessToken}`,
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        }
+
       }));
       return response.data;
     } catch (error) {
@@ -148,4 +160,4 @@ export class EllucianService {
     };
   }
 
-  }
+}
