@@ -14,7 +14,6 @@ import { EventsGateway } from './events/events.gateway';
 import { MetadataModule } from './metadata/metadata.module';
 import { BasicMessagesModule } from './basicmessages/basicmessages.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,7 +26,7 @@ import { BasicMessagesModule } from './basicmessages/basicmessages.module';
     VerificationModule,
     PingModule,
     EllucianModule,
-    BasicMessagesModule, 
+    BasicMessagesModule,
     RouterModule.register([
       {
         path: 'topic',
@@ -52,7 +51,7 @@ import { BasicMessagesModule } from './basicmessages/basicmessages.module';
           {
             path: 'present_proof',
             module: VerificationModule,
-          }, 
+          },
           {
             path: 'basicmessages',
             module: BasicMessagesModule,
