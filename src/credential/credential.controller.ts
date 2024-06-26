@@ -35,10 +35,14 @@ export class CredentialController {
       if (data.state === 'offer_sent') {
         console.log('Credential Offer sent...');
         this.emitEvent(data);
+
+        //handle cred offer sent
+        await this.credentialService.handleStateOfferSent(data);
       }
 
       if (data.state === 'credential_acked') {
         console.log('Credential Accepted ...');
+        await 
         console.log(
           'Fetching detailed record using credential_exchange_id:',
           data.credential_exchange_id,
@@ -87,6 +91,8 @@ export class CredentialController {
         } else {
           console.error('Credential attributes are undefined.');
         }
+        //handle cred offer acknowledge
+        await this.credentialService.handleStateCredAck(data);
       }
       if (
         data.state === 'offer_sent' &&

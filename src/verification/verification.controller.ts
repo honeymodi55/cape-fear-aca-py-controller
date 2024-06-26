@@ -18,6 +18,8 @@ export class VerificationController {
       await this.verificationService.verify(data);
     } else if (data?.state === 'verified') {
       await this.verificationService.handleVerifiedState(data);
+    }else if (data?.state === 'abandoned') {
+      await this.verificationService.handleAbandonedState(data);
     }
     return response.status(HttpStatus.OK).send('OK');
   }

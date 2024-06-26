@@ -7,16 +7,18 @@ import { RedisService } from '../services/redis.service';
 import { EllucianService } from 'src/ellucian/ellucian.service';
 import { MetadataService } from 'src/metadata/metadata.service';
 import { ConfigModule } from '@nestjs/config';
+import { WorkflowModule } from 'src/workflow/workflow.module';
+
 
 @Module({
-  imports: [HttpModule, ConfigModule],
+  imports: [HttpModule, ConfigModule, WorkflowModule],
   controllers: [ConnectionController],
   providers: [
     ConnectionService,
     RedisService,
     EventsGateway,
     EllucianService,
-    MetadataService,
+    MetadataService
   ],
 })
 export class ConnectionModule {}
