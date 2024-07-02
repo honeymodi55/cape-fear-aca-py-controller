@@ -37,6 +37,7 @@ export class MetadataService {
       student_id: metadata.student_id,
       first_name: metadata.first_name,
       last_name: metadata.last_name,
+      expiration: metadata.expiration,
     };
 
     const url = `${this.apiUrl}:8032/connections/${connId}/metadata`;

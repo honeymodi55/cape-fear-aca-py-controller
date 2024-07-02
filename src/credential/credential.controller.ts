@@ -42,8 +42,7 @@ export class CredentialController {
 
       if (data.state === 'credential_acked') {
         console.log('Credential Accepted ...');
-        await 
-        console.log(
+        await console.log(
           'Fetching detailed record using credential_exchange_id:',
           data.credential_exchange_id,
         );
@@ -68,12 +67,16 @@ export class CredentialController {
           const idAttr = attributes.find(
             (attr: { name: string }) => attr.name === 'StudentID',
           );
+          const expAttr = attributes.find(
+            (attr: { name: string }) => attr.name === 'Expiration',
+          );
 
           const First = firstAttr?.value;
           const Last = lastAttr?.value;
           const StudentID = idAttr?.value;
+          const Expiration = expAttr?.value;
 
-          if (First && Last && StudentID) {
+          if (First && Last && StudentID && Expiration) {
             // Update connection metadata when credential is acknowledged
             await this.metadataService.updateConnectionMetadata(
               data.connection_id,
@@ -81,11 +84,12 @@ export class CredentialController {
                 student_id: StudentID,
                 first_name: First,
                 last_name: Last,
+                expiration: Expiration,
               },
             );
           } else {
             console.error(
-              'Name, Last or ID not found in credential attributes.',
+              'Name, Last, ID or Expiration not found in credential attributes.',
             );
           }
         } else {
