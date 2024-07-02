@@ -1,7 +1,6 @@
 import { Controller, Get, Query, HttpException, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
 import { EllucianService } from './ellucian.service';
-import { StudentInfoDto } from './dto/student-info.dto';
 
 @ApiTags('CapeFear SIS')
 @Controller()
@@ -15,11 +14,11 @@ export class EllucianController {
   @ApiQuery({ name: 'studentNumber', required: true, type: String, description: 'The student number' })
   @ApiResponse({ status: 200, description: 'The student information' })
   @ApiResponse({ status: 404, description: 'Student not found' })
-  async getStudentInfo(@Query() query: StudentInfoDto) {
+  async getStudentInfo(@Query('studentNumber') studentNumber: string) {
     console.log('************* Ellucian API controller -student-transcript ***************  /n');
     try {
       await this.ellucianService.getAccessToken(); 
-      const studentInfo = await this.ellucianService.getPerson(query.studentNumber);
+      const studentInfo = await this.ellucianService.getPerson(studentNumber);
       if (!studentInfo.length) {
         throw new HttpException('Student not found', HttpStatus.NOT_FOUND);
       }
