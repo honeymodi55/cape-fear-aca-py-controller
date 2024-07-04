@@ -4,7 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
 import { firstValueFrom } from 'rxjs';
-import { parse, getWorkflowInstance, updateWorkflowInstanceByID } from '@nas-veridid/workflow-parser';
+import {
+  parse,
+  getWorkflowInstance,
+  updateWorkflowInstanceByID,
+} from '@nas-veridid/workflow-parser';
 
 @Injectable()
 export class CredentialService {
@@ -14,7 +18,10 @@ export class CredentialService {
   ) {}
 
   // Helper method to send a message
-  private async sendMessage(connectionId: string, messageDisplayed: string): Promise<void> {
+  private async sendMessage(
+    connectionId: string,
+    messageDisplayed: string,
+  ): Promise<void> {
     const messageUrl = `${this.configService.get<string>('API_BASE_URL')}:8032/connections/${connectionId}/send-message`;
     const requestConfig: AxiosRequestConfig = {
       headers: {
@@ -26,7 +33,9 @@ export class CredentialService {
 
     try {
       await lastValueFrom(
-        this.httpService.post(messageUrl, messageContent, requestConfig).pipe(map((resp) => resp.data))
+        this.httpService
+          .post(messageUrl, messageContent, requestConfig)
+          .pipe(map((resp) => resp.data)),
       );
     } catch (error) {
       console.error('Error sending message:', error);
@@ -122,34 +131,39 @@ export class CredentialService {
     }
   }
 
-  async handleStateOfferSent (credentialData: any): Promise<any> {
-    const WORKFLOW_ID = 'NewStudentOrientation'
+  async handleStateOfferSent(credentialData: any): Promise<any> {
+    const WORKFLOW_ID = 'NewStudentOrientation';
     const connectionId = credentialData?.connection_id;
     const threadId = credentialData?.thread_id;
-    const response = await getWorkflowInstance(`${connectionId}`, `${WORKFLOW_ID}`)
-    console.log("response", response);
+    const response = await getWorkflowInstance(
+      `${connectionId}`,
+      `${WORKFLOW_ID}`,
+    );
+    console.log('response', response);
     const instanceID = response?.instanceID;
     const instance = {
       instanceID: `${instanceID}`,
       workflowID: `${WORKFLOW_ID}`,
       connectionID: `${connectionId}`,
       currentState: `${response.currentState}`,
-      stateData: { "threadId": `${threadId}` }
-    }
-    await updateWorkflowInstanceByID(`${instanceID}`, instance)
+      stateData: { threadId: `${threadId}` },
+    };
+    await updateWorkflowInstanceByID(`${instanceID}`, instance);
     return true;
   }
 
-  async handleStateCredAck (credentialData: any): Promise<any> {
-     
+  async handleStateCredAck(credentialData: any): Promise<any> {
     let resultOfParse: any;
     const WORKFLOWID = 'NewStudentOrientation';
     const ACTIONID_ISSUED = 'accepted';
     const connectionId = credentialData?.connection_id;
     const threadId = credentialData?.thread_id;
 
-    const response = await getWorkflowInstance(`${connectionId}`, `${WORKFLOWID}`)
-    console.log("response", response);
+    const response = await getWorkflowInstance(
+      `${connectionId}`,
+      `${WORKFLOWID}`,
+    );
+    console.log('response', response);
 
     if (response && response.stateData?.threadId === `${threadId}`) {
       const action = {
@@ -162,8 +176,8 @@ export class CredentialService {
       } catch (error) {
         console.error('Error parsing workflow:', error.message);
       }
-        // Send workflow response message as it is
-        await this.sendMessage(connectionId, JSON.stringify(resultOfParse));
+      // Send workflow response message as it is
+      await this.sendMessage(connectionId, JSON.stringify(resultOfParse));
     }
   }
 }

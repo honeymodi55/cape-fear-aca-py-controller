@@ -26,7 +26,7 @@ export class ConnectionService {
       content: this.configService.get<string>('SCHOOL_WELCOME_MESSAGE'),
     };
     try {
-     await lastValueFrom(
+      await lastValueFrom(
         this.httpService
           .post(messageUrl, messageContent, requestConfig)
           .pipe(map((resp) => resp.data)),
