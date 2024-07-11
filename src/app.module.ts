@@ -17,9 +17,15 @@ import { BasicMessagesModule } from './basicmessages/basicmessages.module';
 import { WorkflowModule } from './workflow/workflow.module';
 import { PostgresService } from './services/postgres.service';
 import { RedisService } from './services/redis.service';
-import { initDb, loadWorkflowsFromFile, getWorkflows } from '@nas-veridid/workflow-parser';
+import {
+  initDb,
+  loadWorkflowsFromFile,
+  getWorkflows,
+} from '@nas-veridid/workflow-parser';
 import * as path from 'path';
 import { readFileSync } from 'fs';
+import { SvgService } from './svg/svg.service';
+import { SvgModule } from './svg/svg.module';
 
 @Module({
   imports: [
@@ -102,8 +108,15 @@ import { readFileSync } from 'fs';
       },
     ]),
     MetadataModule,
+    SvgModule,
   ],
-  providers: [AppService, EventsGateway, PostgresService, RedisService],
+  providers: [
+    AppService,
+    EventsGateway,
+    PostgresService,
+    RedisService,
+    SvgService,
+  ],
   controllers: [AppController],
 })
 export class AppModule implements OnModuleInit {
@@ -122,13 +135,19 @@ export class AppModule implements OnModuleInit {
       await loadWorkflowsFromFile(workflowsFilePath);
 
       // Validate workflows
-      const workflowsFromFile = JSON.parse(readFileSync(workflowsFilePath, 'utf-8'));
+      const workflowsFromFile = JSON.parse(
+        readFileSync(workflowsFilePath, 'utf-8'),
+      );
       const workflowsFromDb = await getWorkflows();
 
       if (workflowsFromFile.length === workflowsFromDb.length) {
-        console.log('No.of workflows in workflows.json and No.of workflows in workflow_db table workflows matches! Good ');
+        console.log(
+          'No.of workflows in workflows.json and No.of workflows in workflow_db table workflows matches! Good ',
+        );
       } else {
-        console.error('Error loading workflows: Mismatch in number of workflows.');
+        console.error(
+          'Error loading workflows: Mismatch in number of workflows.',
+        );
       }
     } catch (error) {
       console.error('Error initializing workflows:', error.message);
