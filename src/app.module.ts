@@ -24,6 +24,8 @@ import {
 } from '@nas-veridid/workflow-parser';
 import * as path from 'path';
 import { readFileSync } from 'fs';
+import { SvgService } from './svg/svg.service';
+import { SvgModule } from './svg/svg.module';
 
 @Module({
   imports: [
@@ -106,8 +108,15 @@ import { readFileSync } from 'fs';
       },
     ]),
     MetadataModule,
+    SvgModule,
   ],
-  providers: [AppService, EventsGateway, PostgresService, RedisService],
+  providers: [
+    AppService,
+    EventsGateway,
+    PostgresService,
+    RedisService,
+    SvgService,
+  ],
   controllers: [AppController],
 })
 export class AppModule implements OnModuleInit {
