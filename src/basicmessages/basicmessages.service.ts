@@ -5,6 +5,8 @@ import { HttpService } from '@nestjs/axios';
 import { parse } from '@nas-veridid/workflow-parser';
 import { AxiosRequestConfig } from 'axios';
 import { lastValueFrom, map } from 'rxjs';
+import { EllucianService } from '../ellucian/ellucian.service';
+import { EllucianController } from 'src/ellucian/ellucian.controller';
 
 @Injectable()
 export class BasicMessagesService {
@@ -12,6 +14,8 @@ export class BasicMessagesService {
   constructor(
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
+    private readonly ellucianService: EllucianService,
+    private readonly ellucianController: EllucianController
   ) { }
 
   // Method to validate JSON format
@@ -74,35 +78,35 @@ export class BasicMessagesService {
   }
 
   // Helper method to get metadata
-private async getMetadataByconnectionId(connectionId: string): Promise<any> {
-  const metadataFetchUrl = `${this.configService.get<string>('API_BASE_URL')}:8032/connections/${connectionId}/metadata`;
-  const metadataFetchConfig: AxiosRequestConfig = {
-    headers: {
-      'accept': 'application/json',
-      'X-API-KEY': this.configService.get<string>('API_KEY'),
-      'Authorization': `Bearer ${this.configService.get<string>('BEARER_TOKEN')}`,
-      'Content-Type': 'application/json',
-    },
-  };
+  private async getMetadataByconnectionId(connectionId: string): Promise<any> {
+    const metadataFetchUrl = `${this.configService.get<string>('API_BASE_URL')}:8032/connections/${connectionId}/metadata`;
+    const metadataFetchConfig: AxiosRequestConfig = {
+      headers: {
+        'accept': 'application/json',
+        'X-API-KEY': this.configService.get<string>('API_KEY'),
+        'Authorization': `Bearer ${this.configService.get<string>('BEARER_TOKEN')}`,
+        'Content-Type': 'application/json',
+      },
+    };
 
-  try {
-    const response = await lastValueFrom(
-      this.httpService.get(metadataFetchUrl, metadataFetchConfig).pipe(
-        map((resp) => {
-          console.log(resp.data);
-          return resp.data;
-        })
-      )
-    );
-    return response?.results;
-  } catch (error) {
-    console.error('Error fetching Metadata:', error);
+    try {
+      const response = await lastValueFrom(
+        this.httpService.get(metadataFetchUrl, metadataFetchConfig).pipe(
+          map((resp) => {
+            console.log(resp.data);
+            return resp.data;
+          })
+        )
+      );
+      return response?.results;
+    } catch (error) {
+      console.error('Error fetching Metadata:', error);
+    }
   }
-}
 
   //Helper method to offer credentials
   private async sendCredOffer(credentialOfferBody: object): Promise<void> {
-   
+
     const credentialRequestUrl = `${this.configService.get<string>('API_BASE_URL')}:8032/issue-credential/send-offer`;
     const credentialRequestConfig: AxiosRequestConfig = {
       headers: {
@@ -118,7 +122,27 @@ private async getMetadataByconnectionId(connectionId: string): Promise<any> {
         this.httpService.post(credentialRequestUrl, credentialOfferBody, credentialRequestConfig).pipe(map((resp) => console.log(resp.data)))
       );
     } catch (error) {
-      console.error('Error sending verification request:', error);
+      console.error('Error sending credential offer:', error);
+    }
+  }
+
+  private async invokeWorkflowParser(connectionId: string, action: object): Promise<any> {
+    let response: any;
+
+    try {
+
+      response = await parse(connectionId, action);
+    } catch (error) {
+      console.error('Error parsing workflow:', error.message);
+      return;
+    }
+
+    console.log("response", response);
+
+    if (response.displayData) {
+      await this.sendMessage(connectionId, JSON.stringify(response));
+    } else {
+      await this.sendMessage(connectionId, "Action Menu Feature Not Available For this Connection!");
     }
   }
 
@@ -155,47 +179,141 @@ private async getMetadataByconnectionId(connectionId: string): Promise<any> {
               console.log("orientation cred def id ",)
               if (agentItem.data.cred_def_id = `${this.configService.get<string>('NEW_ORIENTATION_CRED_DEF_ID')}`) {
                 //get metadata of the connection
-      const result = await this.getMetadataByconnectionId(connectionId);
-      console.log ("result", result);
-      console.log("result.last_name",result.last_name)
-
+                const result = await this.getMetadataByconnectionId(connectionId);
                 // get data for send offer
                 const credentialOfferBody = {
+                  "auto_issue": true,
+                  "auto_remove": true,
+                  "connection_id": connectionId,
+                  "cred_def_id": agentItem.data.cred_def_id,
+                  "credential_preview": {
+                    "@type": "issue-credential/1.0/credential-preview",
+                    "attributes": [
+                      {
+                        "name": "Title",
+                        "value": `${agentItem.data.title}`
+                      },
+
+                      {
+                        "name": "Student ID No",
+                        "value": `${result.student_id}`
+                      },
+                      {
+                        "name": "Last Name",
+                        "value": `${result.last_name}`
+                      },
+                      {
+                        "name": "First Name",
+                        "value": `${result.first_name}`
+                      },
+                      {
+                        "name": "Session",
+                        "value": `${agentItem.data.session}`
+                      }
+                    ]
+                  }
+
+                }
+
+                await this.sendCredOffer(credentialOfferBody);
+
+              }
+            } else if (agentItem.process === 'connection') {
+
+              if (agentItem.data?.actionRequested === 'getTranscript') {
+
+                //get metadata by connection id 
+                const metadata = await this.getMetadataByconnectionId(connectionId)
+                if (metadata.student_id) {
+                  //send basic message while waiting
+                  await this.sendMessage(connectionId, JSON.stringify(response));
+                  //get student trascript info from ellucian
+                  let studentTranscripts;
+                  try {
+                    studentTranscripts = await this.ellucianController.getStudentInfo(metadata.student_id);
+                  } catch (error: any) {
+                    console.log("Error retrieving from Ellucian", error);
+                    //invoke workflow parse
+                    const action = { workflowID: 'RequestTranscript', actionID: 'metadataNotFound', data: {} };
+                    await this.invokeWorkflowParser(connectionId, action);
+                    return;
+                  }
+                  if (!studentTranscripts?.courseTranscript || studentTranscripts?.courseTranscript.length < 1) {
+                    console.log("Unable to retrieve any transcript data ");
+                    const action = { workflowID: 'RequestTranscript', actionID: 'metadataNotFound', data: {} };
+                    await this.invokeWorkflowParser(connectionId, action);
+                    return;
+                  }
+                  // send transcript offer to student
+                  const courseTranscripts = JSON.stringify(studentTranscripts?.courseTranscript)
+                  const credentialOfferBody = {
                     "auto_issue": true,
                     "auto_remove": true,
                     "connection_id": connectionId,
-                    "cred_def_id": agentItem.data.cred_def_id,
+                    "cred_def_id": `${this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID')}`,
                     "credential_preview": {
                       "@type": "issue-credential/1.0/credential-preview",
                       "attributes": [
                         {
-                          "name": "Title",
-                          "value": `${agentItem.data.title}`
+                          "name": "Last",
+                          "value": `${studentTranscripts.studentId[0]?.lastName}`
                         },
 
                         {
-                          "name": "Student ID No",
-                          "value": `${result.student_id}`
+                          "name": "First",
+                          "value": `${studentTranscripts.studentId[0]?.firstName}`
                         },
                         {
-                          "name": "Last Name",
-                          "value": `${result.last_name}`
+                          "name": "Expiration",
+                          "value": `${this.configService.get<string>('STUDENTID_EXPIRATION')}`
                         },
                         {
-                          "name": "First Name",
-                          "value": `${result.first_name}`
+                          "name": "StudentID",
+                          "value": `${studentTranscripts.studentId[0]?.studentID}`
                         },
                         {
-                          "name": "Session",
-                          "value": `${agentItem.data.session}`
-                        }
+                          "name": "Middle",
+                          "value": `${studentTranscripts.studentId[0]?.middleName}`
+                        },
+                        {
+                          "name": "Transcript",
+                          "value": `${courseTranscripts}`
+                        },
+                        {
+                          "name": "School",
+                          "value": `${this.configService.get<string>('SCHOOL')}`
+                        },
+                        {
+                          "name": "GPA",
+                          "value": `${studentTranscripts.studentCumulativeTranscript[0].cumulativeGradePointAverage}`
+                        },
+
                       ]
                     }
 
                   }
 
-                await this.sendCredOffer(credentialOfferBody);
+                  try {
+                    await this.sendCredOffer(credentialOfferBody);
+                  }
+                  catch (error: any) {
+                    console.log("Error sedning transcripts", error);
+                    const action = { workflowID: 'RequestTranscript', actionID: 'metadataNotFound', data: {} };
+                    await this.invokeWorkflowParser(connectionId, action);
+                    return;
+                  }
+                  //invoke workflow parse
+                  const action = { workflowID: 'RequestTranscript', actionID: 'metadataFound', data: {} };
+                  await this.invokeWorkflowParser(connectionId, action);
+                  return;
 
+                } else {
+                  console.log("No Student Metadata")
+                  //invoke workflow parse
+                  const action = { workflowID: 'RequestTranscript', actionID: 'metadataNotFound', data: {} };
+                  await this.invokeWorkflowParser(connectionId, action);
+                  return;
+                }
               }
             }
 

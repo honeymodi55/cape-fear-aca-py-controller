@@ -14,7 +14,7 @@ export class ConnectionController {
     private readonly configService: ConfigService,
     private readonly ellucianService: EllucianService,
     private readonly metadataService: MetadataService,
-    ) {}
+  ) {}
 
   @Post('/')
   async handleConnection(
@@ -30,7 +30,7 @@ export class ConnectionController {
         this.emitEvent(connectionData, null, null);
       } else if (connectionData.state === 'active') {
         console.log('Connection is active.');
-        await this.handleActiveState(connectionData)
+        await this.handleActiveState(connectionData);
       }
       return response
         .status(HttpStatus.OK)

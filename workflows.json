@@ -364,7 +364,7 @@
     "name": "Request Transcript",
     "workflowID": "RequestTranscript",
     "formatVersion": "0.0.1",
-    "initialState": "UnderConstruction",
+    "initialState": "HasMetadata",
     "render": [
       {
         "styles": {
@@ -376,19 +376,98 @@
     ],
     "states": [
       {
-        "stateID": "UnderConstruction",
+        "stateID": "HasMetadata",
         "displayData": [
           {
             "type": "image",
-            "url": "https://cfcc.edu/wp-content/uploads/2019/06/cfcc-logo.png"
+            "url": "https://assets-v2.lottiefiles.com/a/36038e50-1178-11ee-9eeb-932b0ace7009/h1JosC4pFh.gif"
           },
           {
             "type": "title",
-            "text": "Under Construction"
+            "text": ""
           },
           {
             "type": "text",
-            "text": "We are working on it. Please try other options."
+            "text": "Searching Student Record ..."
+          },
+          {
+            "type": "agent",
+            "process": "connection",
+            "data":{"actionRequested":"getTranscript"}
+          }
+        ],
+        "transitions": [
+          {
+            "actionID": "goHome",
+            "type": "workflow",
+            "value": "root-menu",
+            "condition": true
+          },
+          {
+            "actionID": "metadataNotFound",
+            "type": "state",
+            "value": "MetadataNotFound",
+            "condition": false
+          },
+          {
+            "actionID": "metadataFound",
+            "type": "state",
+            "value": "MetadataFound",
+            "condition": true
+          }
+        ],
+
+        "actions": [
+          {}
+        ]
+      },
+      {
+        "stateID": "MetadataNotFound",
+        "displayData": [
+          {
+            "type": "image",
+            "url": ""
+          },
+          {
+            "type": "title",
+            "text": "No Student Record Found!"
+          },
+          {
+            "type": "text",
+            "text": "Sorry, Unable to fetch Transcripts right now. Please try again later!"
+          },
+          {
+            "type": "button",
+            "actionID": "goHome",
+            "label": "Go back to home menu"
+          }
+        ],
+        "transitions": [
+          {
+            "actionID": "goHome",
+            "type": "workflow",
+            "value": "root-menu",
+            "condition": true
+          }
+        ],
+        "actions": [
+          {}
+        ]
+      },
+      {
+        "stateID": "MetadataFound",
+        "displayData": [
+          {
+            "type": "image",
+            "url": ""
+          },
+          {
+            "type": "title",
+            "text": "Congratulations!"
+          },
+          {
+            "type": "text",
+            "text": "We have sent your transcripts.  You will be able to use this to demonstrate your scholastic accomplishments. Click View Offer and Accept to receive your Transcript."
           },
           {
             "type": "button",
