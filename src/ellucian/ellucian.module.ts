@@ -10,5 +10,6 @@ import { RedisService } from '../services/redis.service';
   imports: [HttpModule],
   controllers: [EllucianController],
   providers: [EllucianService, RedisService],
+  exports: [EllucianService],
 })
 export class EllucianModule {}

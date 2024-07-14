@@ -7,6 +7,7 @@ import { HttpModule } from '@nestjs/axios';
 import { EllucianService } from 'src/ellucian/ellucian.service';
 import { RedisService } from '../services/redis.service';
 import { EllucianController } from 'src/ellucian/ellucian.controller';
+import { AcaPyService } from '../services/acapy.service';
 
 @Module({
   imports: [WorkflowModule, ConfigModule, HttpModule],
@@ -15,7 +16,8 @@ import { EllucianController } from 'src/ellucian/ellucian.controller';
     BasicMessagesService,
     RedisService,
     EllucianService,
-    EllucianController
+    EllucianController,
+    AcaPyService
   ],
 })
 export class BasicMessagesModule {}
