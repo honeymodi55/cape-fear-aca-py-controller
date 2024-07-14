@@ -1,80 +1,46 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
+import { AcaPyService } from '../services/acapy.service';
 
 @Injectable()
 export class MetadataService {
-  private readonly apiUrl: string;
-
-  constructor(private readonly configService: ConfigService) {
-    this.apiUrl = this.configService.get<string>('SWAGGER_API_URL');
-  }
-
-  private async fetchCurrentMetadata(connId: string): Promise<any> {
-    const url = `${this.apiUrl}:8032/connections/${connId}/metadata`;
-    try {
-      const response = await axios.get(url, {
-        headers: {
-          accept: 'application/json',
-          'X-API-KEY': this.configService.get<string>('API_KEY'),
-          Authorization: `Bearer ${this.configService.get<string>('BEARER_TOKEN')}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error(
-        'Error fetching current metadata:',
-        error.response ? error.response.data : error.message,
-      );
-      throw new Error('Failed to fetch current metadata');
-    }
-  }
+  constructor(
+    private readonly acapyService: AcaPyService,
+  ) {}
 
   async updateConnectionMetadata(connId: string, metadata: any): Promise<void> {
-    const currentMetadata = await this.fetchCurrentMetadata(connId);
+    // Fetch current metadata
+    const currentMetadata = await this.acapyService.fetchCurrentMetadata(connId);
 
-    currentMetadata.results = {
-      student_id: metadata.student_id,
-      first_name: metadata.first_name,
-      last_name: metadata.last_name,
-      expiration: metadata.expiration,
-    };
+    // Initialize results if not present
+    if (!currentMetadata.results) {
+      currentMetadata.results = {};
+    }
 
-    const url = `${this.apiUrl}:8032/connections/${connId}/metadata`;
-    console.log(
-      `Updating metadata at URL: ${url} with data:`,
-      currentMetadata.results,
-    );
+    // Check if any of the specific fields are missing
+    const isAnyFieldMissing = !currentMetadata.results.student_id ||
+                              !currentMetadata.results.first_name ||
+                              !currentMetadata.results.last_name ||
+                              !currentMetadata.results.expiration;
 
-    try {
-      const response = await axios.post(
-        url,
-        { metadata: currentMetadata.results },
-        {
-          headers: {
-            accept: 'application/json',
-            'Content-Type': 'application/json',
-            'X-API-KEY': this.configService.get<string>('API_KEY'),
-            Authorization: `Bearer ${this.configService.get<string>('BEARER_TOKEN')}`,
-          },
-        },
+    // Update all fields if any field is missing
+    if (isAnyFieldMissing) {
+      currentMetadata.results = {
+        ...currentMetadata.results,
+        student_id: metadata.student_id,
+        first_name: metadata.first_name,
+        last_name: metadata.last_name,
+        expiration: metadata.expiration,
+      };
+
+      console.log(
+        `Updating metadata for connection: ${connId} with data:`,
+        currentMetadata.results,
       );
-      if (response.status === 200) {
-        console.log('Metadata updated successfully.');
-      } else {
-        console.error(
-          `Failed to update metadata: ${response.status} - ${response.statusText}`,
-        );
-        throw new Error(
-          `Failed to update metadata: ${response.status} - ${response.statusText}`,
-        );
-      }
-    } catch (error) {
-      console.error(
-        'Error updating metadata:',
-        error.response ? error.response.data : error.message,
-      );
-      throw new Error('Failed to update metadata');
+
+      // Update metadata using AcaPyService
+      await this.acapyService.updateMetadata(connId, currentMetadata.results);
+    } else {
+      console.log(`Metadata for connection: ${connId} is already complete. No update needed.`);
     }
   }
 }
