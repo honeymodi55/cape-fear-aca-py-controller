@@ -6,15 +6,19 @@ import { EventsGateway } from 'src/events/events.gateway';
 import { MetadataModule } from '../metadata/metadata.module';
 import { ConfigService } from '@nestjs/config';
 import { ConnectionService } from '../connection/connection.service';
+import { EllucianModule } from '../ellucian/ellucian.module';
+import { AcaPyService } from '../services/acapy.service';
+
 
 @Module({
-  imports: [HttpModule, MetadataModule],
+  imports: [HttpModule, MetadataModule, EllucianModule],
   controllers: [CredentialController],
   providers: [
     CredentialService,
     ConfigService,
     EventsGateway,
     ConnectionService,
+    AcaPyService
   ],
 })
 export class CredentialModule {}
