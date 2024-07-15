@@ -228,7 +228,7 @@
             "type": "agent",
             "process": "issuance",
             "data": {
-              "cred_def_id": "HaLzFASv5ABz4JJW8g2Rm1:3:CL:295:Cape Fear New Student Orientation Event Admission",
+              "cred_def_id": "Q4iwwWtxP22k3JuPjgYhoz:3:CL:295:CFCC New Student Orientation",
               "title": "New Student Orientation Event Ticket",
               "session": "Evening: 5PM to 7PM"
             }
@@ -276,7 +276,7 @@
             "type": "agent",
             "process": "issuance",
             "data": {
-              "cred_def_id": "HaLzFASv5ABz4JJW8g2Rm1:3:CL:295:Cape Fear New Student Orientation Event Admission",
+              "cred_def_id": "Q4iwwWtxP22k3JuPjgYhoz:3:CL:295:CFCC New Student Orientation",
               "title": "New Student Orientation Event Ticket",
               "session": "Day Session: 8AM to 10AM"
             }
