@@ -54,7 +54,6 @@ export class BasicMessagesService {
             if (agentItem.process === 'verification') {
               await this.acapyService.sendProofRequest(connectionId, agentItem.data);
             } else if (agentItem.process === 'issuance') {
-              console.log(`Orientation Cred Def ID: ${this.configService.get<string>('NEW_ORIENTATION_CRED_DEF_ID')}`);
               if (agentItem.data.cred_def_id === this.configService.get<string>('NEW_ORIENTATION_CRED_DEF_ID')) {
                 //get metadata of the connection
                 const result = await this.acapyService.getMetadataByConnectionId(connectionId);
@@ -89,8 +88,7 @@ export class BasicMessagesService {
                     ]
                   }
                 }
-
-                await this.acapyService.sendCredOffer(credentialOfferBody);
+                this.acapyService.sendCredOffer(credentialOfferBody);
               }
             } else if (agentItem.process === 'connection') {
               if (agentItem.data?.actionRequested === 'getTranscript') {
@@ -121,48 +119,50 @@ export class BasicMessagesService {
                   const credentialOfferBody = {
                     "auto_issue": true,
                     "connection_id": connectionId,
-                    "cred_def_id": this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID'),
+                    "cred_def_id": `${this.configService.get<string>('TRANSCRIPT_CREDENTIAL_DEFINITION_ID')}`,
                     "credential_preview": {
                       "@type": "issue-credential/1.0/credential-preview",
                       "attributes": [
                         {
                           "name": "Last",
-                          "value": studentTranscripts.studentId[0]?.lastName
+                          "value": `${studentTranscripts.studentId[0]?.lastName}`
                         },
+
                         {
                           "name": "First",
-                          "value": studentTranscripts.studentId[0]?.firstName
+                          "value": `${studentTranscripts.studentId[0]?.firstName}`
                         },
                         {
                           "name": "Expiration",
-                          "value": this.configService.get<string>('STUDENTID_EXPIRATION')
+                          "value": `${this.configService.get<string>('STUDENTID_EXPIRATION')}`
                         },
                         {
                           "name": "StudentID",
-                          "value": studentTranscripts.studentId[0]?.studentID
+                          "value": `${studentTranscripts.studentId[0]?.studentID}`
                         },
                         {
                           "name": "Middle",
-                          "value": studentTranscripts.studentId[0]?.middleName
+                          "value": `${studentTranscripts.studentId[0]?.middleName}`
                         },
                         {
                           "name": "Transcript",
-                          "value": courseTranscripts
+                          "value": `${courseTranscripts}`
                         },
                         {
                           "name": "School",
-                          "value": this.configService.get<string>('SCHOOL')
+                          "value": `${this.configService.get<string>('SCHOOL')}`
                         },
                         {
                           "name": "GPA",
-                          "value": studentTranscripts.studentCumulativeTranscript[0].cumulativeGradePointAverage
+                          "value": `${studentTranscripts.studentCumulativeTranscript[0].cumulativeGradePointAverage}`
                         },
+
                       ]
                     }
                   }
-
                   try {
-                    await this.acapyService.sendCredOffer(credentialOfferBody);
+                    
+                     this.acapyService.sendCredOffer(credentialOfferBody);
                   } catch (error: any) {
                     console.log("Error sending transcripts", error);
                     const action = { workflowID: 'RequestTranscript', actionID: 'metadataNotFound', data: {} };
@@ -210,9 +210,6 @@ export class BasicMessagesService {
         console.error('Error parsing workflow:', error.message);
         return;
       }
-
-      console.log("response", response);
-
       if (response.displayData) {
         await this.acapyService.sendMessage(connectionId, JSON.stringify(response));
       } else {
@@ -230,9 +227,6 @@ export class BasicMessagesService {
       console.error('Error parsing workflow:', error.message);
       return;
     }
-
-    console.log("response", response);
-
     if (response.displayData) {
       await this.acapyService.sendMessage(connectionId, JSON.stringify(response));
     } else {
